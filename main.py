@@ -79,10 +79,12 @@ def doc_handler(message):
                 successful += 1
                 send_telegam(ssn,message.chat.id)
                 save_ssn(ssn,name)
-    file = open(f"succ-{name}.txt","r")
-    bot.send_document(message.chat.id,document = file)
-    bot.send_message(message.chat.id,"Done Checking ")
-    bot.send_message(message.chat.id,f"Success : {successful}")
+
+    try:
+        file = open(f"succ-{name}.txt","r")
+        bot.send_document(message.chat.id,document = file)
+        bot.send_message(message.chat.id,"Done Checking ")
+        bot.send_message(message.chat.id,f"Success : {successful}")
     except:
         bot.send_message(message.chat.id, "Done ")
 bot.polling()

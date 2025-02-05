@@ -149,11 +149,11 @@ def doc_handler(message):
 def update_progress(message):
     global total_ssns, checked_ssns, successful_hits, bad_hits
     remaining = total_ssns - checked_ssns
-    bot.send_message(message.chat.id, f"Progress Update:\n"
-                                      f"Total SSNs: {total_ssns}\n"
-                                      f"Checked SSNs: {checked_ssns}\n"
-                                      f"Successful Hits: {successful_hits}\n"
-                                      f"Bad Hits: {bad_hits}\n"
-                                      f"Remaining SSNs: {remaining}")
+    bot.send_message(message.chat.id, f"📢 Progress Update:\n"
+                                      f"🔢 Total SSNs: {total_ssns}\n"
+                                      f"✅ Checked SSNs: {checked_ssns}\n"
+                                      f"🎯 Successful Hits: {successful_hits}\n"
+                                      f"❌ Bad Hits: {bad_hits}\n"
+                                      f"⏳ Remaining SSNs: {remaining}")
 
 bot.polling()
